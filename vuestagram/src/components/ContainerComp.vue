@@ -3,45 +3,95 @@
     <PostComp v-for="(post, i) in postData" :key="i" :postData="post" />
   </div>
   <!-- 필터선택페이지 -->
-  <div v-if="displayedNum===1">
-    <div class="upload-image" :style="{backgroundImage: `url(${uploadedImage})`}"></div>
+  <div v-if="displayedNum === 1">
+    <div
+      :class="['upload-image', selectedFilter]"
+      :style="{ backgroundImage: `url(${uploadedImage})` }"
+    ></div>
     <div class="filters">
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
-      <div class="filter-1"></div>
+      <FilterBox
+        v-for="(filterName, i) in filterList"
+        :key="i"
+        :uploadedImage="uploadedImage"
+        :filterName="filterName"
+      />
     </div>
   </div>
   <!-- 글작성페이지 -->
-  <div v-if="displayedNum===2">
-    <div class="upload-image"></div>
+  <div v-if="displayedNum === 2">
+    <div
+      class="upload-image"
+      :class="selectedFilter"
+      :style="`background-image: url(${uploadedImage})`"
+    ></div>
     <div class="write">
-      <textarea class="write-box" @input="updateWrittenContent">write!</textarea>
+      <textarea class="write-box" @input="updateWrittenContent">
+write!</textarea
+      >
     </div>
+  </div>
+
+  <div v-if="displayedNum == 3">
+    <MyPage :one="1" :two="2"/>
   </div>
 </template>
 
 <script>
 import PostComp from "./PostComp.vue";
+import FilterBox from "./FilterBox.vue";
+import MyPage from "./MyPage.vue";
 
 export default {
   name: "ContainerComp",
+  data() {
+    return {
+      filterList: [
+        "aden",
+        "_1977",
+        "brannan",
+        "brooklyn",
+        "clarendon",
+        "earlybird",
+        "gingham",
+        "hudson",
+        "inkwell",
+        "kelvin",
+        "lark",
+        "lofi",
+        "maven",
+        "mayfair",
+        "moon",
+        "nashville",
+        "perpetua",
+        "reyes",
+        "rise",
+        "slumber",
+        "stinson",
+        "toaster",
+        "valencia",
+        "walden",
+        "willow",
+        "xpro2",
+      ],
+    };
+  },
   components: {
     PostComp,
+    FilterBox,
+    MyPage
   },
   props: {
     postData: Array,
     displayedNum: Number,
-    uploadedImage: String
+    uploadedImage: String,
+    selectedFilter: String,
   },
   methods: {
-    updateWrittenContent(e){
-      let content = e.target.value; 
-      this.$emit('updatedWrittenContent', content);
-
-    }
-  }
+    updateWrittenContent(e) {
+      let content = e.target.value;
+      this.$emit("updatedWrittenContent", content);
+    },
+  },
 };
 </script>
 

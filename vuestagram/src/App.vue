@@ -4,30 +4,44 @@
       <li>Cancel</li>
     </ul>
     <ul class="header-button-right">
-      <li v-if="displayedNum===1" @click="displayedNum=2">Next</li>
-      <li v-if="displayedNum===2" @click="publish">Publish</li>
+      <li v-if="displayedNum === 1" @click="displayedNum = 2">Next</li>
+      <li v-if="displayedNum === 2" @click="publish">Publish</li>
     </ul>
     <img src="./assets/logo.png" class="logo" />
   </div>
 
-  <ContainerComp :postData="postData" :displayedNum="displayedNum" :uploadedImage="uploadedImage" @updatedWrittenContent="updateContent"/>
+  <ContainerComp
+    :postData="postData"
+    :displayedNum="displayedNum"
+    :uploadedImage="uploadedImage"
+    @updatedWrittenContent="updateContent"
+    :selectedFilter="selectedFilter"
+  />
   <button @click="getPost">더보기</button>
+  <p>{{ now() }} {{ counter }}</p>
+  <p>{{ nme }} {{ag}} {{ counter }}</p>
+  <button @click="changeName">재렌더링</button>
 
   <div class="footer">
     <ul class="footer-button-plus">
       <!-- @change: input 데이터가 change 됐을 때 -->
-      <input @change="uploadFile" accept="image/*" type="file" id="file" class="inputfile" />
+      <input
+        @change="uploadFile"
+        accept="image/*"
+        type="file"
+        id="file"
+        class="inputfile"
+      />
       <label for="file" class="input-plus">+</label>
     </ul>
   </div>
-
-
 </template>
 
 <script>
 import ContainerComp from "./components/ContainerComp.vue";
 import PostData from "../public/data.js";
 import axios from "axios";
+import { mapState, mapMutations } from "vuex";
 
 export default {
   name: "App",
@@ -36,13 +50,26 @@ export default {
   },
   data() {
     return {
+      counter: 0,
       postData: PostData,
-      displayedNum: 0, 
-      uploadedImage: null, 
-      writtenContent:"", 
+      displayedNum: 3,
+      uploadedImage: null,
+      writtenContent: "",
+      selectedFilter: null,
     };
   },
+  computed: {
+    name() {
+      return this.$store.state.name;
+    },
+    ...mapState(["name", "age", "likes"]),
+    ...mapState({ nme: "name", ag: "age", lke: "likes" }),
+  },
   methods: {
+    ...mapMutations(['changeName']),
+    now() {
+      return new Date();
+    },
     getPost() {
       axios
         .get("https://codingapple1.github.io/vue/more1.json")
@@ -54,29 +81,34 @@ export default {
         });
     },
     uploadFile(e) {
-      let files = e.target.files; 
+      let files = e.target.files;
       this.displayedNum = 1;
       // file.type 으로 확장자 검사 가능
-      let fileUrl= URL.createObjectURL(files[0]); 
-      this.uploadedImage = fileUrl; 
+      let fileUrl = URL.createObjectURL(files[0]);
+      this.uploadedImage = fileUrl;
     },
-    publish(){ 
+    publish() {
       var myPost = {
-      name: "Me",
-      userImage: "https://picsum.photos/100?random=3",
-      postImage: this.uploadedImage,
-      likes: 0,
-      date: "May 15",
-      liked: false,
-      content: this.writtenContent,
-      filter: "perpetua"
-    };
+        name: "Me",
+        userImage: "https://picsum.photos/100?random=3",
+        postImage: this.uploadedImage,
+        likes: 0,
+        date: "May 15",
+        liked: false,
+        content: this.writtenContent,
+        filter: this.selectedFilter,
+      };
       this.postData.unshift(myPost);
       this.displayedNum = 0;
     },
-    updateContent(content){
-      this.writtenContent = content; 
-    }
+    updateContent(content) {
+      this.writtenContent = content;
+    },
+  },
+  mounted() {
+    this.emitter.on("filterSelected", (a) => {
+      this.selectedFilter = a;
+    });
   },
 };
 </script>

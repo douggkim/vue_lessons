@@ -4,9 +4,9 @@
       <div class="profile"></div>
       <span class="profile-name">{{postData.name}}</span>
     </div>
-    <div class="post-body" :style="{backgroundImage: `url(${postData.postImage})`}"></div>
+    <div class="post-body" :class="postData.filter" :style="{backgroundImage: `url(${postData.postImage})`}" @click="changeLike"></div>
     <div class="post-content">
-      <p>{{postData.likes}} Likes</p>
+      <p>{{$store.state.likes}} Likes</p>
       <p><strong>{{postData.name}}</strong> {{postData.content}}</p>
       <p class="date">{{postData.date}}</p>
     </div>
@@ -18,6 +18,23 @@ export default {
     name: "PostComp",
     props: {
         postData: Object
+    },
+    data() {
+      return{
+       
+      }
+    },
+    methods: {
+      changeLike(){
+        if (!this.$store.postLiked) {
+          this.$store.commit('increaseLike')
+          this.$store.postLiked = true;
+         } else{
+          this.$store.commit('decreaseLike') 
+          this.$store.postLiked = false;
+         } 
+
+      }
     }
 };
 </script>
